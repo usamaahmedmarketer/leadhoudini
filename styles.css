@@ -135,7 +135,7 @@ h1.hero-title{font-family:var(--font-head);font-size:clamp(2.8rem,6vw,5.4rem);fo
 
 /* ===== FRAMEWORK / STEPS ===== */
 .framework-section{padding:100px 5%;background:#fff}
-.fw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:3rem}
+.fw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
 .fw-card{background:var(--bg-soft);border:1px solid transparent;border-radius:var(--radius-lg);padding:2rem 1.5rem;text-align:left;transition:all .35s;position:relative;overflow:hidden;transform-style:preserve-3d}
 .fw-card:hover{background:#fff;border-color:var(--line);transform:translateY(-6px) rotateX(3deg) scale(1.015);box-shadow:0 26px 50px -18px rgba(6,40,80,.30)}
 .fw-num{font-family:var(--font-head);font-size:3.5rem;font-weight:800;background:linear-gradient(135deg,var(--purple),var(--orange));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:.75rem;letter-spacing:-2px;opacity:.85;background-size:200% 100%;animation:shimmer 7s linear infinite}
@@ -191,7 +191,9 @@ h2.cta-title .accent{color:#A8E8FF}
 .price-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:2.5rem 2rem;transition:all .35s;position:relative;overflow:hidden;transform-style:preserve-3d}
 .price-card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(20,10,60,.10);border-color:transparent}
 .price-card.featured{border-color:var(--orange);box-shadow:0 0 0 2px var(--orange)}
-.price-card.featured::after{content:'Most Popular';position:absolute;top:16px;right:-32px;background:var(--orange);color:#fff;font-size:10px;font-weight:800;padding:4px 40px;transform:rotate(45deg);font-family:var(--font-head);letter-spacing:1px;text-transform:uppercase}
+.price-card.featured::after{content:'Best Value';position:absolute;top:16px;right:-32px;background:var(--orange);color:#fff;font-size:10px;font-weight:800;padding:4px 40px;transform:rotate(45deg);font-family:var(--font-head);letter-spacing:1px;text-transform:uppercase}
+.price-card.featured .price-features{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem 1.5rem}
+@media(max-width:660px){.price-card.featured .price-features{grid-template-columns:1fr}}
 .price-label{font-family:var(--font-head);font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:.75rem}
 .price-name{font-family:var(--font-head);font-size:1.4rem;font-weight:800;color:var(--ink);margin-bottom:.5rem;letter-spacing:-.5px}
 .price-amount{font-family:var(--font-head);font-size:2.8rem;font-weight:800;color:var(--ink);margin-bottom:.25rem;letter-spacing:-2px;line-height:1}
