@@ -80,7 +80,6 @@ h2.section-title .accent{color:var(--purple);background:linear-gradient(135deg,v
 @keyframes orbDrift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(4%,-3%) scale(1.08)}66%{transform:translate(-3%,4%) scale(.95)}}
 .hero-inner{max-width:1240px;margin:0 auto;position:relative;z-index:2;width:100%;display:grid;grid-template-columns:1.1fr 1fr;gap:3rem;align-items:center;perspective:1400px}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:.7rem;font-size:14px;color:rgba(255,255,255,.85);margin-bottom:1.5rem;font-weight:500}
-.hero-eyebrow::after{content:'';width:60px;height:1px;background:rgba(255,255,255,.4);display:inline-block}
 h1.hero-title{font-family:var(--font-head);font-size:clamp(2.8rem,6vw,5.4rem);font-weight:800;line-height:1.02;letter-spacing:-2.5px;margin-bottom:2.25rem;color:#fff}
 .hero-title .accent{color:#A8E8FF}
 .hero-sub{font-size:1.1rem;color:rgba(255,255,255,.82);max-width:520px;margin-bottom:2.5rem;line-height:1.7;font-weight:400}
