@@ -1,6 +1,25 @@
 // ── Leadhoudini — Main Script ─────────────────────────────────────────────
 (function () {
 
+  // ── Google Sheet endpoint ──
+  // Paste your Apps Script Web app URL here (see setup guide). Until then, forms will show an error instead of pretending to send.
+  const SHEET_ENDPOINT = 'PASTE_YOUR_DEPLOYED_SCRIPT_URL_HERE';
+
+  function sendToSheet(payload) {
+    if (!SHEET_ENDPOINT || SHEET_ENDPOINT.indexOf('PASTE_') === 0) {
+      return Promise.reject(new Error('Form endpoint not configured'));
+    }
+    payload.page = location.pathname.replace(/^\//, '') || 'index.html';
+    // text/plain avoids a CORS preflight, which Apps Script does not answer.
+    return fetch(SHEET_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+      keepalive: true
+    });
+  }
+
   // ── Nav scroll ──
   const nav = document.querySelector('nav.main-nav');
   if (nav) {
@@ -148,15 +167,27 @@
           }
         }
 
-        // TODO: Send lead data to your endpoint
-        console.log('Scorecard lead:', {
-          name: name.value,
-          email: email.value,
-          phone: scorecard.querySelector('[name="sc-phone"]')?.value || '',
-          business: scorecard.querySelector('[name="sc-business"]')?.value || '',
-          score: pct,
-          answers: answers
+        // Send every question + the chosen answer text to the Google Sheet
+        const qa = [];
+        steps.forEach(function (st) {
+          const q = st.querySelector('.sc-question');
+          const picked = st.querySelector('.sc-option.selected');
+          qa.push({
+            q: q ? q.textContent.trim() : st.dataset.q,
+            a: picked ? picked.textContent.trim() + ' (' + picked.dataset.val + '/3)' : ''
+          });
         });
+        const labelNow = results && results.querySelector('.sc-score-label');
+        sendToSheet({
+          type: 'scorecard',
+          name: name.value.trim(),
+          email: email.value.trim(),
+          phone: (scorecard.querySelector('[name="sc-phone"]') || {}).value || '',
+          business: (scorecard.querySelector('[name="sc-business"]') || {}).value || '',
+          score: pct,
+          scoreLabel: labelNow ? labelNow.textContent : '',
+          qa: qa
+        }).catch(function (err) { console.error('Scorecard lead not saved:', err); });
       });
     }
 
@@ -173,20 +204,51 @@
       e.preventDefault();
       const btn = contactForm.querySelector('button[type="submit"]');
       const orig = btn.textContent;
+      const nameEl = contactForm.querySelector('[name="name"]');
+      const emailEl = contactForm.querySelector('[name="email"]');
+      [nameEl, emailEl].forEach(function (el) { el.style.borderColor = ''; });
+      if (!nameEl.value.trim() || !/^\S+@\S+\.\S+$/.test(emailEl.value.trim())) {
+        if (!nameEl.value.trim()) nameEl.style.borderColor = '#e53e3e';
+        if (!/^\S+@\S+\.\S+$/.test(emailEl.value.trim())) emailEl.style.borderColor = '#e53e3e';
+        btn.textContent = 'Please add your name and a valid email';
+        setTimeout(function () { btn.textContent = orig; }, 2500);
+        return;
+      }
+
+      // Every field: label text -> value, so each form question gets its own column in the sheet
+      const qa = [];
+      contactForm.querySelectorAll('.field-wrap').forEach(function (w) {
+        const lab = w.querySelector('label');
+        const inp = w.querySelector('input,select,textarea');
+        if (!lab || !inp) return;
+        const clone = lab.cloneNode(true);
+        clone.querySelectorAll('span').forEach(function (sp) { sp.remove(); });
+        qa.push({ q: clone.textContent.trim(), a: (inp.value || '').trim() });
+      });
+
       btn.textContent = 'Sending…';
       btn.disabled = true;
-
-      // Simulate send (replace with real endpoint)
-      setTimeout(() => {
+      sendToSheet({
+        type: 'contact',
+        name: nameEl.value.trim(),
+        email: emailEl.value.trim(),
+        phone: (contactForm.querySelector('[name="phone"]') || {}).value || '',
+        business: (contactForm.querySelector('[name="business"]') || {}).value || '',
+        qa: qa
+      }).then(function () {
         btn.textContent = '✓ Sent! We\'ll be in touch.';
         btn.style.background = '#14B87A';
         contactForm.reset();
-        setTimeout(() => {
+      }).catch(function () {
+        btn.textContent = 'Could not send. Please email hello@leadhoudini.com';
+        btn.style.background = '#e53e3e';
+      }).then(function () {
+        setTimeout(function () {
           btn.textContent = orig;
           btn.style.background = '';
           btn.disabled = false;
-        }, 3000);
-      }, 1000);
+        }, 4000);
+      });
     });
   }
 
