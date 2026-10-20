@@ -7,7 +7,7 @@
 
   // Paste your Calendly scheduling link here (e.g. https://calendly.com/yourname/strategy-call).
   // Leave as is to skip the "pick a time" step.
-  const CALENDLY_URL = 'PASTE_YOUR_CALENDLY_LINK_HERE';
+  const CALENDLY_URL = 'https://calendly.com/usamaahmedleadhoudini/30-minutes-call-for-your-clinic';
 
   function sendToSheet(payload) {
     if (!SHEET_ENDPOINT || SHEET_ENDPOINT.indexOf('PASTE_') === 0) {
