@@ -3,7 +3,7 @@
 
   // ── Google Sheet endpoint ──
   // Paste your Apps Script Web app URL here (see setup guide). Until then, forms will show an error instead of pretending to send.
-  const SHEET_ENDPOINT = 'PASTE_YOUR_DEPLOYED_SCRIPT_URL_HERE';
+  const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwAoftykenc8yqMbUzTlPEKsNJ3i5WF---3ZPJI9UNNZj-0IHZvcJLOxjJ1GcsiMg0g/exec';
 
   // Paste your Calendly scheduling link here (e.g. https://calendly.com/yourname/strategy-call).
   // Leave as is to skip the "pick a time" step.
