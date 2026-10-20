@@ -355,7 +355,7 @@ h2.section-title .accent,.fw-num{background-size:200% 100%;animation:shimmer 7s 
 @media(max-width:500px){.partners-grid{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr 1fr}}
 
 
-.hero-title-sub{display:block;margin-top:.5rem;font-size:.5em;line-height:1.2;font-weight:700;color:#fff;letter-spacing:-.01em}
+.hero-title-sub{display:block;color:#A8E8FF}
 /* 4 expertise cards on the home page: 2x2 instead of 3+1 */
 .svc-grid-home{grid-template-columns:repeat(2,1fr)}
 @media(max-width:640px){.svc-grid-home{grid-template-columns:1fr}}
