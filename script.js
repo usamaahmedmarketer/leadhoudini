@@ -5,6 +5,10 @@
   // Paste your Apps Script Web app URL here (see setup guide). Until then, forms will show an error instead of pretending to send.
   const SHEET_ENDPOINT = 'PASTE_YOUR_DEPLOYED_SCRIPT_URL_HERE';
 
+  // Paste your Calendly scheduling link here (e.g. https://calendly.com/yourname/strategy-call).
+  // Leave as is to skip the "pick a time" step.
+  const CALENDLY_URL = 'PASTE_YOUR_CALENDLY_LINK_HERE';
+
   function sendToSheet(payload) {
     if (!SHEET_ENDPOINT || SHEET_ENDPOINT.indexOf('PASTE_') === 0) {
       return Promise.reject(new Error('Form endpoint not configured'));
@@ -195,6 +199,47 @@
   }
 
 
+
+  // ── Step 2: Calendly inline booking, then record the booking in the sheet ──
+  function showBooking(name, email) {
+    const step = document.getElementById('booking-step');
+    const embed = document.getElementById('calendly-embed');
+    const formSection = document.querySelector('.contact-layout').closest('section');
+    if (!step || !embed) return;
+    formSection.hidden = true;
+    step.hidden = false;
+    window.scrollTo({ top: step.getBoundingClientRect().top + window.scrollY - 90, behavior: 'smooth' });
+
+    window.addEventListener('message', function (e) {
+      if (!e.data || e.data.event !== 'calendly.event_scheduled') return;
+      const p = e.data.payload || {};
+      sendToSheet({
+        type: 'booking',
+        email: email,
+        name: name,
+        eventUri: (p.event || {}).uri || '',
+        inviteeUri: (p.invitee || {}).uri || ''
+      }).catch(function (err) { console.error('Booking not saved:', err); });
+      embed.hidden = true;
+      document.getElementById('booking-done').hidden = false;
+    });
+
+    const s = document.createElement('script');
+    s.src = 'https://assets.calendly.com/assets/external/widget.js';
+    s.async = true;
+    s.onload = function () {
+      window.Calendly.initInlineWidget({
+        url: CALENDLY_URL + (CALENDLY_URL.indexOf('?') > -1 ? '&' : '?') +
+             'hide_gdpr_banner=1&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email),
+        parentElement: embed
+      });
+    };
+    s.onerror = function () {
+      embed.innerHTML = '<a class="btn-main" href="' + CALENDLY_URL + '" target="_blank" rel="noopener">Pick a time →</a>';
+    };
+    document.body.appendChild(s);
+  }
+
   // ══════════════════════════════════════════════════════════════════════════
   //  CONTACT FORM
   // ══════════════════════════════════════════════════════════════════════════
@@ -236,6 +281,11 @@
         business: (contactForm.querySelector('[name="business"]') || {}).value || '',
         qa: qa
       }).then(function () {
+        if (CALENDLY_URL.indexOf('PASTE_') !== 0) {
+          showBooking(nameEl.value.trim(), emailEl.value.trim());
+          contactForm.reset();
+          return;
+        }
         btn.textContent = '✓ Sent! We\'ll be in touch.';
         btn.style.background = '#14B87A';
         contactForm.reset();
