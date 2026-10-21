@@ -378,4 +378,11 @@ h2.section-title .accent,.fw-num{background-size:200% 100%;animation:shimmer 7s 
 .legal a{color:var(--orange);font-weight:700}
 .legal strong{color:var(--ink)}
 
+
+/* Footer social icons */
+.footer-social{display:flex;gap:.6rem;margin-top:1rem}
+.footer-social a{width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.1);color:#fff;transition:background .2s,transform .2s}
+.footer-social a:hover{background:var(--orange);transform:translateY(-2px)}
+.footer-social svg{width:18px;height:18px}
+
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
