@@ -224,20 +224,43 @@
       document.getElementById('booking-done').hidden = false;
     });
 
-    const s = document.createElement('script');
-    s.src = 'https://assets.calendly.com/assets/external/widget.js';
-    s.async = true;
-    s.onload = function () {
+    embed.innerHTML = '<div style="padding:3rem 0;color:var(--muted)">Loading calendar…</div>';
+    loadCalendly().then(function () {
+      embed.innerHTML = '';
       window.Calendly.initInlineWidget({
         url: CALENDLY_URL + (CALENDLY_URL.indexOf('?') > -1 ? '&' : '?') +
              'hide_gdpr_banner=1&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email),
         parentElement: embed
       });
-    };
-    s.onerror = function () {
+    }).catch(function () {
       embed.innerHTML = '<a class="btn-main" href="' + CALENDLY_URL + '" target="_blank" rel="noopener">Pick a time →</a>';
-    };
-    document.body.appendChild(s);
+    });
+  }
+
+  // Load Calendly's widget once, early, so the calendar opens instantly after the form is submitted.
+  let calendlyPromise = null;
+  function loadCalendly() {
+    if (calendlyPromise) return calendlyPromise;
+    calendlyPromise = new Promise(function (resolve, reject) {
+      if (window.Calendly) return resolve();
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'https://assets.calendly.com/assets/external/widget.css';
+      document.head.appendChild(css);
+      const s = document.createElement('script');
+      s.src = 'https://assets.calendly.com/assets/external/widget.js';
+      s.async = true;
+      s.onload = resolve;
+      s.onerror = reject;
+      document.body.appendChild(s);
+    });
+    return calendlyPromise;
+  }
+  if (document.querySelector('.contact-form') && CALENDLY_URL.indexOf('PASTE_') !== 0) {
+    ['https://calendly.com', 'https://assets.calendly.com'].forEach(function (h) {
+      const l = document.createElement('link'); l.rel = 'preconnect'; l.href = h; l.crossOrigin = ''; document.head.appendChild(l);
+    });
+    loadCalendly().catch(function () {});
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -271,21 +294,26 @@
         qa.push({ q: clone.textContent.trim(), a: (inp.value || '').trim() });
       });
 
-      btn.textContent = 'Sending…';
-      btn.disabled = true;
-      sendToSheet({
+      const payload = {
         type: 'contact',
         name: nameEl.value.trim(),
         email: emailEl.value.trim(),
         phone: (contactForm.querySelector('[name="phone"]') || {}).value || '',
         business: (contactForm.querySelector('[name="business"]') || {}).value || '',
         qa: qa
-      }).then(function () {
-        if (CALENDLY_URL.indexOf('PASTE_') !== 0) {
-          showBooking(nameEl.value.trim(), emailEl.value.trim());
-          contactForm.reset();
-          return;
-        }
+      };
+
+      // With Calendly configured: open the calendar instantly and save the lead in the background
+      if (CALENDLY_URL.indexOf('PASTE_') !== 0) {
+        showBooking(payload.name, payload.email);
+        sendToSheet(payload).catch(function (err) { console.error('Lead not saved:', err); });
+        contactForm.reset();
+        return;
+      }
+
+      btn.textContent = 'Sending…';
+      btn.disabled = true;
+      sendToSheet(payload).then(function () {
         btn.textContent = '✓ Sent! We\'ll be in touch.';
         btn.style.background = '#14B87A';
         contactForm.reset();
