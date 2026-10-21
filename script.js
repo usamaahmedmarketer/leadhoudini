@@ -182,6 +182,16 @@
           });
         });
         const labelNow = results && results.querySelector('.sc-score-label');
+        // Remember their details so the Book a Call step can skip re-typing them
+        try {
+          localStorage.setItem('lh_lead', JSON.stringify({
+            name: name.value.trim(),
+            email: email.value.trim(),
+            phone: (scorecard.querySelector('[name="sc-phone"]') || {}).value || '',
+            business: (scorecard.querySelector('[name="sc-business"]') || {}).value || '',
+            score: pct
+          }));
+        } catch (err) {}
         sendToSheet({
           type: 'scorecard',
           name: name.value.trim(),
@@ -328,6 +338,37 @@
         }, 4000);
       });
     });
+  }
+
+  // ── Coming from the scorecard: details are already known ──
+  if (contactForm) {
+    let lead = null;
+    try { lead = JSON.parse(localStorage.getItem('lh_lead') || 'null'); } catch (err) {}
+    if (lead && lead.name && lead.email) {
+      const fromScorecard = /[?&]from=scorecard/.test(location.search);
+      if (fromScorecard && CALENDLY_URL.indexOf('PASTE_') !== 0) {
+        // Skip the form: go straight to picking a time, and log the lead in the Book a Call tab
+        showBooking(lead.name, lead.email);
+        sendToSheet({
+          type: 'contact',
+          name: lead.name,
+          email: lead.email,
+          phone: lead.phone || '',
+          business: lead.business || '',
+          qa: [
+            { q: 'Name', a: lead.name }, { q: 'Email', a: lead.email },
+            { q: 'Phone', a: lead.phone || '' }, { q: 'Business Name', a: lead.business || '' },
+            { q: 'Source', a: 'Scorecard (score ' + lead.score + '%)' }
+          ]
+        }).catch(function (err) { console.error('Lead not saved:', err); });
+      } else {
+        // Normal visit to the contact page: just prefill what we know
+        [['name', lead.name], ['email', lead.email], ['phone', lead.phone], ['business', lead.business]].forEach(function (p) {
+          const el = contactForm.querySelector('[name="' + p[0] + '"]');
+          if (el && !el.value && p[1]) el.value = p[1];
+        });
+      }
+    }
   }
 
 })();
