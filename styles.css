@@ -385,4 +385,11 @@ h2.section-title .accent,.fw-num{background-size:200% 100%;animation:shimmer 7s 
 .footer-social a:hover{background:var(--orange);transform:translateY(-2px)}
 .footer-social svg{width:18px;height:18px}
 
+
+/* Contact form: details carried over from the scorecard */
+.field-wrap[hidden]{display:none}
+.prefill-note{display:flex;flex-wrap:wrap;gap:.4rem .9rem;justify-content:space-between;align-items:center;padding:.85rem 1rem;margin-bottom:1.25rem;background:var(--bg-soft);border:1px solid var(--line);border-radius:12px;font-size:13.5px;color:var(--muted)}
+.prefill-note strong{color:var(--ink)}
+.prefill-note a{color:var(--orange);font-weight:700;text-decoration:none}
+
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}

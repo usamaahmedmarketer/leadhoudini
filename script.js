@@ -304,6 +304,7 @@
         qa.push({ q: clone.textContent.trim(), a: (inp.value || '').trim() });
       });
 
+      if (contactForm.dataset.source) qa.push({ q: 'Source', a: contactForm.dataset.source });
       const payload = {
         type: 'contact',
         name: nameEl.value.trim(),
@@ -340,33 +341,33 @@
     });
   }
 
-  // ── Coming from the scorecard: details are already known ──
+  // ── Coming from the scorecard: fill the basics automatically, ask only for the rest ──
   if (contactForm) {
     let lead = null;
     try { lead = JSON.parse(localStorage.getItem('lh_lead') || 'null'); } catch (err) {}
     if (lead && lead.name && lead.email) {
-      const fromScorecard = /[?&]from=scorecard/.test(location.search);
-      if (fromScorecard && CALENDLY_URL.indexOf('PASTE_') !== 0) {
-        // Skip the form: go straight to picking a time, and log the lead in the Book a Call tab
-        showBooking(lead.name, lead.email);
-        sendToSheet({
-          type: 'contact',
-          name: lead.name,
-          email: lead.email,
-          phone: lead.phone || '',
-          business: lead.business || '',
-          qa: [
-            { q: 'Name', a: lead.name }, { q: 'Email', a: lead.email },
-            { q: 'Phone', a: lead.phone || '' }, { q: 'Business Name', a: lead.business || '' },
-            { q: 'Source', a: 'Scorecard (score ' + lead.score + '%)' }
-          ]
-        }).catch(function (err) { console.error('Lead not saved:', err); });
-      } else {
-        // Normal visit to the contact page: just prefill what we know
-        [['name', lead.name], ['email', lead.email], ['phone', lead.phone], ['business', lead.business]].forEach(function (p) {
-          const el = contactForm.querySelector('[name="' + p[0] + '"]');
-          if (el && !el.value && p[1]) el.value = p[1];
+      [['name', lead.name], ['email', lead.email], ['phone', lead.phone], ['business', lead.business]].forEach(function (p) {
+        const el = contactForm.querySelector('[name="' + p[0] + '"]');
+        if (el && !el.value && p[1]) el.value = p[1];
+      });
+      if (/[?&]from=scorecard/.test(location.search)) {
+        contactForm.dataset.source = 'Scorecard (score ' + lead.score + '%)';
+        const wraps = ['name', 'email', 'phone', 'business'].map(function (n) {
+          const el = contactForm.querySelector('[name="' + n + '"]');
+          return el ? el.closest('.field-wrap') : null;
+        }).filter(Boolean);
+        wraps.forEach(function (w) { w.hidden = true; });
+        const note = document.createElement('div');
+        note.className = 'prefill-note';
+        note.innerHTML = '<span>Booking as <strong></strong> · <span class="pf-email"></span></span> <a href="#" class="pf-change">Not you? Edit details</a>';
+        note.querySelector('strong').textContent = lead.name;
+        note.querySelector('.pf-email').textContent = lead.email;
+        note.querySelector('.pf-change').addEventListener('click', function (e) {
+          e.preventDefault();
+          wraps.forEach(function (w) { w.hidden = false; });
+          note.remove();
         });
+        contactForm.insertBefore(note, contactForm.firstChild);
       }
     }
   }
