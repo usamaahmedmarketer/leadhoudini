@@ -318,7 +318,7 @@
         btn.style.background = '#14B87A';
         contactForm.reset();
       }).catch(function () {
-        btn.textContent = 'Could not send. Please email hello@leadhoudini.com';
+        btn.textContent = 'Could not send. Please email usamaahmed@leadhoudini.com';
         btn.style.background = '#e53e3e';
       }).then(function () {
         setTimeout(function () {
