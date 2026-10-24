@@ -393,3 +393,39 @@ h2.section-title .accent,.fw-num{background-size:200% 100%;animation:shimmer 7s 
 .prefill-note a{color:var(--orange);font-weight:700;text-decoration:none}
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+
+/* Framework page — detailed steps */
+.fw-jump{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:1.75rem}
+.fw-jump a{font-family:var(--font-head);font-size:13px;font-weight:700;color:var(--ink);text-decoration:none;background:var(--bg-soft);border:1px solid var(--line);border-radius:var(--radius-pill);padding:.55rem 1rem;transition:all .2s}
+.fw-jump a b{color:var(--orange);margin-right:.35rem}
+.fw-jump a:hover{background:#fff;border-color:var(--orange)}
+.fw-card-detail{scroll-margin-top:90px}
+.step-tagline{font-family:var(--font-head);font-weight:700;font-size:1.02rem;color:var(--ink2);margin:-.15rem 0 .25rem;letter-spacing:-.2px}
+.step-list{margin:.25rem 0 1rem 1.15rem;display:flex;flex-direction:column;gap:.55rem}
+.step-list li{font-size:14px;color:var(--muted);line-height:1.7}
+.step-list li strong{color:var(--ink2)}
+.step-ol{list-style:decimal}
+.step-note{background:#FFF8EC;border-left:3px solid #E8A33D;border-radius:0 12px 12px 0;padding:1rem 1.25rem;font-size:13.5px;color:var(--ink2);line-height:1.75;margin:1rem 0}
+.step-msg{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:1rem 1.25rem;font-size:13.5px;color:var(--ink2);line-height:1.75;font-style:italic}
+.step-formula{background:var(--ink);color:#fff;border-radius:14px;padding:1.25rem 1.5rem;font-family:var(--font-head);font-weight:700;font-size:1rem;line-height:1.6;margin:.5rem 0 1rem}
+.step-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:.75rem 0}
+.step-box{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:1.25rem 1.35rem}
+.step-box h5{font-family:var(--font-head);font-size:.98rem;font-weight:800;color:var(--ink);margin-bottom:.5rem;letter-spacing:-.2px}
+.step-box p{font-size:13.5px;color:var(--muted);line-height:1.7;margin:0}
+.step-box .step-list{margin-bottom:0}
+.step-box .step-list li{font-size:13.5px}
+.step-timeline{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:#fff}
+.step-timeline>div{display:grid;grid-template-columns:150px 1fr;gap:1rem;padding:.9rem 1.25rem;border-top:1px solid var(--line);align-items:start}
+.step-timeline>div:first-child{border-top:0}
+.step-timeline b{font-family:var(--font-head);font-size:13px;font-weight:800;color:var(--orange)}
+.step-timeline span{font-size:13.5px;color:var(--ink2);line-height:1.65}
+.step-flow{display:flex;flex-direction:column;gap:.6rem;margin-top:1.5rem}
+.step-flow>div{background:var(--bg-soft);border-radius:14px;padding:1rem 1.25rem;position:relative}
+.step-flow>div:not(:last-child)::after{content:'↓';position:absolute;left:1.25rem;bottom:-1.05rem;color:var(--orange);font-weight:800;font-size:14px;z-index:1}
+.step-flow b{display:block;font-family:var(--font-head);font-size:.98rem;font-weight:800;color:var(--ink)}
+.step-flow span{font-size:13.5px;color:var(--muted);line-height:1.6}
+@media(max-width:760px){
+  .step-grid{grid-template-columns:1fr}
+  .step-timeline>div{grid-template-columns:1fr;gap:.2rem}
+  .fw-card-detail{padding:1.5rem!important}
+}
